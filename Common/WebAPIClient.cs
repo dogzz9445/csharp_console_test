@@ -19,7 +19,7 @@ namespace WebAPIClient
 
         protected async Task<T> GetAsync<T>(string uri) where T: new()
         {
-            T result;
+            T result = default(T);
             try
             {
                 using var httpResponse = await Request.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
@@ -56,10 +56,10 @@ namespace WebAPIClient
             }
 
             RaiseMessageReceived(this, new MessageReceivedEventArgs());
-            return result == null ? default(T) : result;
+            return result;
         }
 
-        protected RaiseMessageReceived(object sender, MessageReceivedEventArgs args)
+        protected void RaiseMessageReceived(object sender, MessageReceivedEventArgs args)
         {
             MessageReceived?.Invoke(sender, args);
         }
@@ -68,9 +68,8 @@ namespace WebAPIClient
     public class MessageReceivedEventArgs : EventArgs
     {
         private HttpResponseMessage responseMessage;
-        public MessageReceivedEventArgs(HttpResponseMessage responseMessage)
+        public MessageReceivedEventArgs()
         {
-            ResponseMessage = responseMessage;
         }
 
         public HttpResponseMessage ResponseMessage 

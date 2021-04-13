@@ -3,12 +3,17 @@ using System.ComponentModel;
 
 namespace Upbit
 {
-    public class Market : INotifyPropertyChanged
+    public class Candle
     {
         public string market;
-        public string korean_name;
-        public string english_name;
-        public string market_warning;
+    }
+
+    public class Candle : INotifyPropertyChanged
+    {
+        public string market;
+        public string candle_date_time_utc;
+        public string candle_date_time_utc;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void RaisePropertyChanged(object sender, PropertyChangedEventArgs args)

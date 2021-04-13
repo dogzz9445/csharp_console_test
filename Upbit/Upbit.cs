@@ -29,7 +29,7 @@ namespace Upbit
 
         public async void TestGet()
         {
-            var task1 = GetAsyncTest<List<Market>>(UpbitURL.MarketAllURL);
+            var task1 = GetAsync<List<Market>>(UpbitURL.MarketAllURL);
             Task.WaitAll(task1);
             var result1 = task1.Result;
             foreach (var market in result1)

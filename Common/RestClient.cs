@@ -7,17 +7,17 @@ using System.Net.Http.Json;
 using RateLimiter;
 using ComposableAsync;
 
-namespace WebAPIClient
+namespace RestClient
 {
-    public class WebAPIClient
+    public class RestClient
     {
         protected readonly HttpClient Request;
 
-        public WebAPIClient()
+        public RestClient(int minuteRate, int secondRate)
         {
             // var hourConstraint = new CountByIntervalAwaitableConstraint(36000, TimeSpan.FromHours(1));
-            var minuteConstraint = new CountByIntervalAwaitableConstraint(600, TimeSpan.FromMinutes(1));
-            var secondConstraint = new CountByIntervalAwaitableConstraint(10, TimeSpan.FromSeconds(1));
+            var minuteConstraint = new CountByIntervalAwaitableConstraint(minuteRate, TimeSpan.FromMinutes(1));
+            var secondConstraint = new CountByIntervalAwaitableConstraint(secondRate, TimeSpan.FromSeconds(1));
             
             var handler = TimeLimiter.Compose(minuteConstraint, secondConstraint).AsDelegatingHandler();
             

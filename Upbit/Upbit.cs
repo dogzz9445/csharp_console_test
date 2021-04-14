@@ -1,8 +1,9 @@
 using System;
-using WebAPIClient;
+using RestClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Web;
 
 namespace Upbit
 {
@@ -18,17 +19,139 @@ namespace Upbit
         public const string TradeTicksURL = BaseURL + VersionURL + "trades/ticks";
         public const string TickerURL = BaseURL + VersionURL + "ticker";
         public const string OrderBookURL = BaseURL + VersionURL + "orderbook";
-
     }
-
     
-    public class UpbitAPI : WebAPIClient.WebAPIClient
+    public class UpbitAPI : RestClient.RestClient
     {
-        public List<Market> MarketList()
+        public UpbitAPI() : base(600, 10)
         {
-            var taskGetMarket = GetAsync<List<Market>>(UpbitURL.MarketAllURL);
-            taskGetMarket.Wait();
-            return taskGetMarket.Result;
+        }
+
+        public async Task<List<Market>> GetAsyncMarketList()
+        {
+            return await GetAsync<List<Market>>(UpbitURL.MarketAllURL);
+        }
+
+        public async Task<List<Orderbook>> GetAsyncOrderbookList(string marketCodes)
+        {
+            var builder = new UriBuilder(UpbitURL.OrderBookURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["markets"] = marketCodes;
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<Orderbook>>(builder.Uri.ToString());
+        }
+
+        public async Task<List<MinuteCandle>> GetAsyncMinuteCandles(string marketCode, int unit, string to = "", int count = 0)
+        {
+            var builder = new UriBuilder(UpbitURL.CandleMinutesURL + unit);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["market"] = marketCode;
+            if (to != "")
+            {
+                query["to"] = to;
+            }
+            if (count != 0)
+            {
+                query["count"] = count.ToString();
+            }
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<MinuteCandle>>(builder.Uri.ToString());
+        }
+        
+        public async Task<List<DayCandle>> GetAsyncDayCandles(string marketCode, string to = "", int count = 0, string convrtingPriceUnit = "")
+        {
+            var builder = new UriBuilder(UpbitURL.CandleDaysURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["market"] = marketCode;
+            if (to != "")
+            {
+                query["to"] = to;
+            }
+            if (count != 0)
+            {
+                query["count"] = count.ToString();
+            }
+            if (to != "")
+            {
+                query["convrtingPriceUnit"] = convrtingPriceUnit;
+            }
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<DayCandle>>(builder.Uri.ToString());
+        }
+
+        public async Task<List<WeekCandle>> GetAsyncWeekCandles(string marketCode, string to = "", int count = 0, string convrtingPriceUnit = "")
+        {
+            var builder = new UriBuilder(UpbitURL.CandleWeeksURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["market"] = marketCode;
+            if (to != "")
+            {
+                query["to"] = to;
+            }
+            if (count != 0)
+            {
+                query["count"] = count.ToString();
+            }
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<WeekCandle>>(builder.Uri.ToString());
+        }
+
+        public async Task<List<MonthCandle>> GetAsyncMonthCandles(string marketCode, string to = "", int count = 0, string convrtingPriceUnit = "")
+        {
+            var builder = new UriBuilder(UpbitURL.CandleMonthsURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["market"] = marketCode;
+            if (to != "")
+            {
+                query["to"] = to;
+            }
+            if (count != 0)
+            {
+                query["count"] = count.ToString();
+            }
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<MonthCandle>>(builder.Uri.ToString());
+        }
+
+        public async Task<List<TradeTick>> GetAsyncTradeTicks(string marketCode, string to = "", int count = 0, string cursor = "", int daysAgo = 0)
+        {
+            var builder = new UriBuilder(UpbitURL.TradeTicksURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["market"] = marketCode;
+            if (to != "")
+            {
+                query["to"] = to;
+            }
+            if (count != 0)
+            {
+                query["count"] = count.ToString();
+            }
+            if (cursor != "")
+            {
+                query["cursor"] = cursor;
+            }
+            if (daysAgo != 0)
+            {
+                query["daysAgo"] = daysAgo.ToString();
+            }
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<TradeTick>>(builder.Uri.ToString());
+        }
+
+        public async Task<List<Ticker>> GetAsyncTicker(string marketCodes)
+        {
+            var builder = new UriBuilder(UpbitURL.TickerURL);
+            var query = HttpUtility.ParseQueryString(string.Empty);
+            query["markets"] = marketCodes;
+            builder.Query = query.ToString();
+
+            return await GetAsync<List<Ticker>>(builder.Uri.ToString());
         }
 
         public async void TestGet()

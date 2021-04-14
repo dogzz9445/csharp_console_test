@@ -154,8 +154,20 @@ namespace Upbit
             return await GetAsync<List<Ticker>>(builder.Uri.ToString());
         }
 
-        public async void TestGet()
+        public void TestGet()
         {
+            List<Task> taskList = new List<Task>();
+            
+            taskList.Add(GetAsyncMarketList());
+            taskList.Add(GetAsyncOrderbookList("KRW-BTC"));
+            taskList.Add(GetAsyncMinuteCandles("KRW-BTC", 1));
+            taskList.Add(GetAsyncWeekCandles("KRW-BTC"));
+            taskList.Add(GetAsyncMonthCandles("KRW-BTC"));
+            taskList.Add(GetAsyncTradeTicks("KRW-BTC"));
+            taskList.Add(GetAsyncTicker("KRW-BTC"));
+
+            Task.WaitAll(taskList.ToArray());
+            Console.WriteLine("Complete...");
         }
     }
 }

@@ -4,12 +4,29 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Json;
+using RateLimiter;
+using ComposableAsync;
 
 namespace WebAPIClient
 {
     public class WebAPIClient
     {
-        protected readonly HttpClient Request = new HttpClient();
+        protected readonly HttpClient Request;
+
+        public WebAPIClient()
+        {
+            // var hourConstraint = new CountByIntervalAwaitableConstraint(36000, TimeSpan.FromHours(1));
+            var minuteConstraint = new CountByIntervalAwaitableConstraint(600, TimeSpan.FromMinutes(1));
+            var secondConstraint = new CountByIntervalAwaitableConstraint(10, TimeSpan.FromSeconds(1));
+            
+            var handler = TimeLimiter.Compose(minuteConstraint, secondConstraint).AsDelegatingHandler();
+            
+            // var handler = TimeLimiter
+            //         .GetFromMaxCountByInterval(10, TimeSpan.FromSeconds(1))
+            //         .AsDelegatingHandler();
+
+            Request = new HttpClient(handler);
+        }
 
         protected async Task<T> GetAsync<T>(string uri) where T: new()
         {

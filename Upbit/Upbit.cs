@@ -2,6 +2,7 @@ using System;
 using WebAPIClient;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace Upbit
 {
@@ -23,15 +24,11 @@ namespace Upbit
     
     public class UpbitAPI : WebAPIClient.WebAPIClient
     {
-        public UpbitAPI()
-        {
-        }
-
         public List<Market> MarketList()
         {
-            var task1 = GetAsync<List<Market>>(UpbitURL.MarketAllURL);
-            Task.WaitAll(task1);
-            return task1.Result;
+            var taskGetMarket = GetAsync<List<Market>>(UpbitURL.MarketAllURL);
+            taskGetMarket.Wait();
+            return taskGetMarket.Result;
         }
 
         public async void TestGet()

@@ -27,15 +27,15 @@ namespace Upbit
         {
         }
 
-        public async void TestGet()
+        public List<Market> MarketList()
         {
             var task1 = GetAsync<List<Market>>(UpbitURL.MarketAllURL);
             Task.WaitAll(task1);
-            var result1 = task1.Result;
-            foreach (var market in result1)
-            {
-                Console.WriteLine(market.korean_name);
-            }
+            return task1.Result;
+        }
+
+        public async void TestGet()
+        {
         }
     }
 }

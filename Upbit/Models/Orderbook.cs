@@ -3,21 +3,6 @@ using System.ComponentModel;
 
 namespace Upbit
 {
-    public class OrderbookUnit : INotifyPropertyChanged
-    {
-        public double ask_price;
-        public double bid_price;
-        public double ask_size;
-        public double bid_size;
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RaisePropertyChanged(object sender, PropertyChangedEventArgs args)
-        {
-            PropertyChanged?.Invoke(sender, args);
-        }
-    }
-
     public class Orderbook : INotifyPropertyChanged
     {
         public string market;
@@ -33,5 +18,18 @@ namespace Upbit
             PropertyChanged?.Invoke(sender, args);
         }
     }
+    public class OrderbookUnit : INotifyPropertyChanged
+    {
+        public double ask_price;
+        public double bid_price;
+        public double ask_size;
+        public double bid_size;
+        
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        private void RaisePropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            PropertyChanged?.Invoke(sender, args);
+        }
+    }
 }

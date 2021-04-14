@@ -9,13 +9,7 @@ namespace WebAPIClient
 {
     public class WebAPIClient
     {
-        protected readonly HttpClient Request;
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
-
-        protected WebAPIClient()
-        {
-            Request = new HttpClient();
-        }
+        protected readonly HttpClient Request = new HttpClient();
 
         protected async Task<T> GetAsync<T>(string uri) where T: new()
         {
@@ -50,6 +44,10 @@ namespace WebAPIClient
             {
                 Console.WriteLine("Error: Failed to HTTP request.");	
             }
+            catch (NotSupportedException)
+            {
+                Console.WriteLine("Error: The content type is not supported.");
+            }
             catch(TaskCanceledException)
             {
                 Console.WriteLine("Error: Task cancled");	
@@ -58,6 +56,8 @@ namespace WebAPIClient
             RaiseMessageReceived(this, new MessageReceivedEventArgs());
             return result;
         }
+
+        public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
         protected void RaiseMessageReceived(object sender, MessageReceivedEventArgs args)
         {

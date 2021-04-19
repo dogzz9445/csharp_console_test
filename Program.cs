@@ -7,14 +7,14 @@ namespace example_dotnet
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             bool bResponse = false;
 
             UpbitAPI api = new UpbitAPI();
             api.MessageReceived += (s, e) => 
             {
                 bResponse = true;
+                var message = Convert.ChangeType(e.ResponseMessage, e.ResponseType);
+                Console.WriteLine(message);
             };
             
             api.TestGet();

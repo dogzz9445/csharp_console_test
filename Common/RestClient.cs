@@ -20,17 +20,12 @@ namespace RestClient
             var secondConstraint = new CountByIntervalAwaitableConstraint(secondRate, TimeSpan.FromSeconds(1));
             
             var handler = TimeLimiter.Compose(minuteConstraint, secondConstraint).AsDelegatingHandler();
-            
-            // var handler = TimeLimiter
-            //         .GetFromMaxCountByInterval(10, TimeSpan.FromSeconds(1))
-            //         .AsDelegatingHandler();
 
             Request = new HttpClient(handler);
         }
 
         protected async Task<T> GetAsync<T>(string uri) where T: new()
         {
-            T result = default(T);
             try
             {
                 using var httpResponse = await Request.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
@@ -46,7 +41,9 @@ namespace RestClient
 
                     JsonSerializer serializer = new JsonSerializer();
 
-                    result = serializer.Deserialize<T>(jsonReader);
+                    T result = serializer.Deserialize<T>(jsonReader);
+                    RaiseMessageReceived(this, new MessageReceivedEventArgs(result.GetType(), result));
+                    return result;
                 }
                 else
                 {
@@ -69,9 +66,7 @@ namespace RestClient
             {
                 Console.WriteLine("Error: Task cancled");	
             }
-
-            RaiseMessageReceived(this, new MessageReceivedEventArgs());
-            return result;
+            return default(T);
         }
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived;
@@ -84,16 +79,20 @@ namespace RestClient
     
     public class MessageReceivedEventArgs : EventArgs
     {
-        private HttpResponseMessage responseMessage;
-        public MessageReceivedEventArgs()
-        {
-        }
+        private object responseMessage;
+        private Type responseType;
 
-        public HttpResponseMessage ResponseMessage 
+        public MessageReceivedEventArgs(Type type, object message)
+        {
+            responseMessage = message;
+            responseType = type;
+        }
+        public object ResponseMessage 
         { 
             get => responseMessage; 
             set => responseMessage = value; 
         }
+        public Type ResponseType { get => responseType; set => responseType = value; }
     }
 
 }
